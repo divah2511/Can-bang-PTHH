@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Cân bằng PTHH</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f5f3ff', 100: '#ede9fe', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Hiệu ứng xoay vòng cho biểu đồ tròn */
+        .progress-ring-circle {
+            transition: stroke-dashoffset 1s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-[#0f0d1a] text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Header -->
+    <header class="border-b border-purple-900/30 bg-[#0f0d1a]/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-purple-500/20 p-2.5 rounded-2xl border border-purple-500/30 text-purple-400">
+                    <i data-lucide="flask-conical" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg tracking-tight bg-gradient-to-r from-purple-400 via-fuchsia-300 to-indigo-300 bg-clip-text text-transparent">Cân bằng PTHH</h1>
+                </div>
+            </div>
+            <button onclick="toggleDarkMode()" class="p-2.5 rounded-2xl bg-purple-950/40 hover:bg-purple-900/50 text-purple-300 transition border border-purple-800/40">
+                <i data-lucide="sun" id="theme-icon" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-6 sm:py-8 flex-1 w-full flex flex-col justify-center">
+
+        <!-- 1. MÀN HÌNH CẤU HÌNH -->
+        <div id="setup-screen" class="bg-purple-950/25 border border-purple-900/40 rounded-3xl p-5 sm:p-10 shadow-2xl backdrop-blur-xl">
+            <div class="text-center max-w-lg mx-auto mb-8">
+                <span class="bg-purple-500/10 text-purple-300 text-xs font-semibold px-3.5 py-1.5 rounded-full border border-purple-500/20 uppercase tracking-wider shadow-inner">Thử thách hóa học</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold mt-3 tracking-tight text-white">Chọn cấu hình bài luyện tập</h2>
+                <p class="text-purple-300/70 text-xs sm:text-sm mt-2">Chọn mức độ và số lượng câu hỏi để bắt đầu "cân não" ngay nào!</p>
+            </div>
+
+            <div class="space-y-6 max-w-md mx-auto">
+                <!-- Chọn mức độ -->
+                <div>
+                    <label class="block text-sm font-semibold text-purple-200 mb-3">1. Chọn mức độ khó:</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="setDifficulty('easy')" id="btn-easy" class="diff-btn py-3 px-2 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-900/40 bg-purple-950/30 hover:border-purple-500 transition text-center flex flex-col items-center gap-1">
+                            <span class="text-emerald-400">🌱 Dễ</span>
+                        </button>
+                        <button onclick="setDifficulty('medium')" id="btn-medium" class="diff-btn py-3 px-2 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-500 bg-purple-500/15 text-purple-200 transition text-center flex flex-col items-center gap-1 shadow-lg shadow-purple-950/40">
+                            <span class="text-amber-400">⚡ Vừa</span>
+                        </button>
+                        <button onclick="setDifficulty('hard')" id="btn-hard" class="diff-btn py-3 px-2 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-900/40 bg-purple-950/30 hover:border-purple-500 transition text-center flex flex-col items-center gap-1">
+                            <span class="text-rose-400">🔥 Khó</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chọn số lượng câu -->
+                <div>
+                    <label class="block text-sm font-semibold text-purple-200 mb-3">2. Số lượng câu hỏi:</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="setCount(5)" id="count-5" class="count-btn py-3 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-900/40 bg-purple-950/30 hover:border-purple-500 transition text-purple-300">5 câu</button>
+                        <button onclick="setCount(10)" id="count-10" class="count-btn py-3 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-500 bg-purple-500/15 text-purple-200 transition shadow-lg shadow-purple-950/40">10 câu</button>
+                        <button onclick="setCount(20)" id="count-20" class="count-btn py-3 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-900/40 bg-purple-950/30 hover:border-purple-500 transition text-purple-300">20 câu</button>
+                    </div>
+                </div>
+
+                <!-- Nút bắt đầu -->
+                <button onclick="startQuiz()" class="w-full mt-6 py-4 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-extrabold rounded-2xl shadow-xl shadow-purple-900/30 transition transform active:scale-95 flex items-center justify-center gap-2 text-sm sm:text-base">
+                    <span>Bắt đầu cân bằng ngay</span>
+                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. MÀN HÌNH LÀM BÀI -->
+        <div id="quiz-screen" class="hidden space-y-6">
+            <!-- Thanh tiến trình & Thông tin -->
+            <div class="flex justify-between items-center bg-purple-950/25 border border-purple-900/40 px-5 py-3.5 rounded-2xl">
+                <div>
+                    <span id="question-progress" class="text-xs font-bold text-purple-300 uppercase tracking-wider">Câu hỏi 1 / 10</span>
+                    <h3 id="difficulty-badge" class="font-extrabold text-base sm:text-lg mt-0.5 text-white">Mức: Vừa</h3>
+                </div>
+                <div class="bg-purple-900/30 px-3.5 py-1.5 rounded-xl border border-purple-800/40 flex items-center gap-2">
+                    <i data-lucide="clock" class="w-4 h-4 text-purple-300"></i>
+                    <span id="timer" class="font-mono font-bold text-xs sm:text-sm text-purple-200">00:00</span>
+                </div>
+            </div>
+
+            <!-- Khung câu hỏi chính -->
+            <div class="bg-purple-950/25 border border-purple-900/40 rounded-3xl p-5 sm:p-10 shadow-xl backdrop-blur-xl">
+                <div class="mb-4">
+                    <span class="text-xs text-purple-300/70 font-medium">Điền các hệ số thích hợp vào ô `[]` (điền 1 nếu hệ số là 1):</span>
+                </div>
+
+                <!-- Phương trình hiển thị dạng ô [] tương thích mobile/desktop -->
+                <div id="equation-container" class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 text-base sm:text-2xl font-bold my-6 sm:my-8 bg-[#0a0812]/70 p-4 sm:p-8 rounded-2xl border border-purple-900/30 shadow-inner">
+                    <!-- Dynamic populated -->
+                </div>
+
+                <!-- Phản hồi nhanh -->
+                <div id="feedback-box" class="hidden p-4 rounded-2xl mb-6 text-xs sm:text-sm border"></div>
+
+                <!-- Nút thao tác -->
+                <div class="flex justify-between items-center gap-3">
+                    <button onclick="prevQuestion()" id="prev-btn" class="px-4 sm:px-5 py-2.5 rounded-xl border border-purple-900/40 bg-purple-950/40 hover:bg-purple-900/40 text-purple-300 font-semibold text-xs sm:text-sm transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i> <span class="hidden sm:inline">Câu trước</span>
+                    </button>
+                    <div class="flex gap-2 sm:gap-3">
+                        <button onclick="submitAnswer()" id="submit-btn" class="px-5 sm:px-6 py-2.5 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-xl shadow-lg shadow-purple-900/30 transition flex items-center gap-1 text-xs sm:text-sm">
+                            <i data-lucide="check" class="w-4 h-4"></i> Kiểm tra
+                        </button>
+                        <button onclick="nextQuestion()" id="next-btn" class="hidden px-5 sm:px-6 py-2.5 bg-fuchsia-500 hover:bg-fuchsia-600 text-white font-bold rounded-xl shadow-lg shadow-fuchsia-900/30 transition flex items-center gap-1 text-xs sm:text-sm">
+                            <span>Câu tiếp</span> <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. MÀN HÌNH TỔNG KẾT & BIỂU ĐỒ TRÒN -->
+        <div id="result-screen" class="hidden space-y-6">
+            <div class="bg-purple-950/25 border border-purple-900/40 rounded-3xl p-5 sm:p-10 shadow-2xl backdrop-blur-xl text-center">
+                <div class="inline-flex bg-purple-500/20 p-4 rounded-3xl border border-purple-500/30 text-purple-300 mb-4 shadow-lg">
+                    <i data-lucide="award" class="w-10 h-10"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Hoàn Thành Thử Thách!</h2>
+                <p class="text-purple-300/70 text-xs sm:text-sm mt-1">Kết quả phân tích năng lực chi tiết dành riêng cho bạn:</p>
+
+                <!-- KHU VỰC HIỂN THỊ BIỂU ĐỒ TRÒN & THỐNG KÊ -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 my-6 sm:my-8 items-center max-w-2xl mx-auto">
+                    <!-- Biểu đồ tròn Donut Chart -->
+                    <div class="flex flex-col items-center justify-center bg-[#0a0812]/70 p-5 rounded-2xl border border-purple-900/30">
+                        <div class="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <!-- Vòng nền -->
+                                <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" class="text-purple-950" fill="transparent"></circle>
+                                <!-- Vòng tiến trình % -->
+                                <circle id="progress-ring" cx="50" cy="50" r="40" stroke="currentColor" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" class="text-purple-400 progress-ring-circle" fill="transparent"></circle>
+                            </svg>
+                            <div class="absolute flex flex-col items-center justify-center text-center">
+                                <span id="chart-percentage" class="text-xl sm:text-2xl font-extrabold text-purple-300">0%</span>
+                                <span class="text-[9px] sm:text-[10px] text-purple-400/70 uppercase tracking-wider font-semibold">Chính xác</span>
+                            </div>
+                        </div>
+                        <span class="text-[11px] sm:text-xs text-purple-300/70 mt-3 font-medium">Tỷ lệ đúng thực tế</span>
+                    </div>
+
+                    <!-- Thống kê điểm 10 & số câu -->
+                    <div class="md:col-span-2 grid grid-cols-2 gap-3 sm:gap-4">
+                        <div class="bg-[#0a0812]/70 p-4 sm:p-5 rounded-2xl border border-purple-900/30 flex flex-col justify-center">
+                            <span class="text-xs text-purple-300/70 block font-medium">Thang điểm 10</span>
+                            <span id="final-score-10" class="text-3xl sm:text-4xl font-extrabold text-purple-300 mt-1 block">0.0</span>
+                        </div>
+                        <div class="bg-[#0a0812]/70 p-4 sm:p-5 rounded-2xl border border-purple-900/30 flex flex-col justify-center">
+                            <span class="text-xs text-purple-300/70 block font-medium">Số câu đúng</span>
+                            <span id="final-correct-count" class="text-3xl sm:text-4xl font-extrabold text-fuchsia-400 mt-1 block">0/0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Đánh giá năng lực & Lỗi sai -->
+                <div class="bg-[#0a0812]/90 border border-purple-900/40 rounded-2xl p-4 sm:p-6 text-left mb-6 sm:mb-8 space-y-3 shadow-inner">
+                    <div class="flex items-center gap-2 border-b border-purple-900/30 pb-3">
+                        <i data-lucide="brain" class="w-5 h-5 text-purple-400"></i>
+                        <h3 class="font-bold text-sm sm:text-base text-purple-200">Đánh giá năng lực & Lời khuyên từ Zero</h3>
+                    </div>
+                    <p id="evaluation-comment" class="text-xs sm:text-sm text-purple-300/90 leading-relaxed"></p>
+                </div>
+
+                <!-- Danh sách chi tiết câu hỏi -->
+                <div class="text-left mb-6 sm:mb-8">
+                    <h3 class="font-bold text-sm sm:text-base mb-3 text-purple-200 flex items-center gap-2">
+                        <i data-lucide="list-checks" class="w-5 h-5 text-purple-400"></i> Chi tiết các câu hỏi trong bài:
+                    </h3>
+                    <div id="detailed-review-list" class="space-y-3 max-h-80 sm:max-h-96 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Nút làm lại -->
+                <button onclick="resetQuiz()" class="px-8 py-3.5 bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-extrabold rounded-2xl shadow-xl shadow-purple-900/30 transition transform active:scale-95 inline-flex items-center gap-2 text-xs sm:text-sm">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Làm lại bài mới
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-xs text-purple-400/50 border-t border-purple-900/20">
+        Được thiết kế riêng với ❤️ bởi chủ nhân chiếc web
+    </footer>
+
+    <!-- JavaScript Toàn Bộ Logic -->
+    <script>
+        lucide.createIcons();
+
+        // Ngân hàng câu hỏi
+        const questionBank = {
+            easy: [
+                { reactants: ["H2", "O2"], products: ["H2O"], correct: [2, 1, 2], display: "[H2] + [O2] -> [H2O]" },
+                { reactants: ["Na", "O2"], products: ["Na2O"], correct: [4, 1, 2], display: "[Na] + [O2] -> [Na2O]" },
+                { reactants: ["Mg", "O2"], products: ["MgO"], correct: [2, 1, 2], display: "[Mg] + [O2] -> [MgO]" },
+                { reactants: ["Al", "O2"], products: ["Al2O3"], correct: [4, 3, 2], display: "[Al] + [O2] -> [Al2O3]" },
+                { reactants: ["C", "O2"], products: ["CO2"], correct: [1, 1, 1], display: "[C] + [O2] -> [CO2]" },
+                { reactants: ["Zn", "HCl"], products: ["ZnCl2", "H2"], correct: [1, 2, 1, 1], display: "[Zn] + [HCl] -> [ZnCl2] + [H2]" }
+            ],
+            medium: [
+                { reactants: ["Fe", "O2"], products: ["Fe3O4"], correct: [3, 2, 1], display: "[Fe] + [O2] -> [Fe3O4]" },
+                { reactants: ["P", "O2"], products: ["P2O5"], correct: [4, 5, 2], display: "[P] + [O2] -> [P2O5]" },
+                { reactants: ["NaOH", "H2SO4"], products: ["Na2SO4", "H2O"], correct: [2, 1, 1, 2], display: "[NaOH] + [H2SO4] -> [Na2SO4] + [H2O]" },
+                { reactants: ["Al", "HCl"], products: ["AlCl3", "H2"], correct: [2, 6, 2, 3], display: "[Al] + [HCl] -> [AlCl3] + [H2]" },
+                { reactants: ["KClO3"], products: ["KCl", "O2"], correct: [2, 2, 3], display: "[KClO3] -> [KCl] + [O2]" },
+                { reactants: ["BaCl2", "Na2SO4"], products: ["BaSO4", "NaCl"], correct: [1, 1, 1, 2], display: "[BaCl2] + [Na2SO4] -> [BaSO4] + [NaCl]" }
+            ],
+            hard: [
+                { reactants: ["Fe", "HNO3"], products: ["Fe(NO3)3", "NO", "H2O"], correct: [1, 4, 1, 1, 2], display: "[Fe] + [HNO3] -> [Fe(NO3)3] + [NO] + [H2O]" },
+                { reactants: ["KMnO4", "HCl"], products: ["KCl", "MnCl2", "Cl2", "H2O"], correct: [2, 16, 2, 2, 5, 8], display: "[KMnO4] + [HCl] -> [KCl] + [MnCl2] + [Cl2] + [H2O]" },
+                { reactants: ["FeS2", "O2"], products: ["Fe2O3", "SO2"], correct: [4, 11, 2, 8], display: "[FeS2] + [O2] -> [Fe2O3] + [SO2]" },
+                { reactants: ["Al", "HNO3"], products: ["Al(NO3)3", "N2O", "H2O"], correct: [8, 30, 8, 1, 15], display: "[Al] + [HNO3] -> [Al(NO3)3] + [N2O] + [H2O]" }
+            ]
+        };
+
+        let currentDifficulty = 'medium';
+        let currentCount = 10;
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let userAnswers = [];
+        let timerInterval = null;
+        let secondsElapsed = 0;
+
+        function setDifficulty(level) {
+            currentDifficulty = level;
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.className = "diff-btn py-3 px-2 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-900/40 bg-purple-950/30 hover:border-purple-500 transition text-center flex flex-col items-center gap-1";
+            });
+            document.getElementById(`btn-${level}`).className = "diff-btn py-3 px-2 sm:px-4 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-500 bg-purple-500/15 text-purple-200 transition text-center flex flex-col items-center gap-1 shadow-lg shadow-purple-950/40";
+        }
+
+        function setCount(num) {
+            currentCount = num;
+            document.querySelectorAll('.count-btn').forEach(btn => {
+                btn.className = "count-btn py-3 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-900/40 bg-purple-950/30 hover:border-purple-500 transition text-purple-300";
+            });
+            document.getElementById(`count-${num}`).className = "count-btn py-3 rounded-2xl font-semibold text-xs sm:text-sm border border-purple-500 bg-purple-500/15 text-purple-200 transition shadow-lg shadow-purple-950/40";
+        }
+
+        function startQuiz() {
+            let pool = [...questionBank[currentDifficulty]];
+            currentQuestions = [];
+            for(let i = 0; i < currentCount; i++) {
+                let randomQ = pool[Math.floor(Math.random() * pool.length)];
+                currentQuestions.push(JSON.parse(JSON.stringify(randomQ)));
+            }
+
+            currentIndex = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+            secondsElapsed = 0;
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+
+            const diffNames = { easy: 'Dễ', medium: 'Vừa', hard: 'Khó' };
+            document.getElementById('difficulty-badge').innerText = `Mức: ${diffNames[currentDifficulty]}`;
+
+            startTimer();
+            loadQuestion();
+        }
+
+        function startTimer() {
+            if(timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                let m = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+                let s = (secondsElapsed % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            const q = currentQuestions[currentIndex];
+            document.getElementById('question-progress').innerText = `Câu hỏi ${currentIndex + 1} / ${currentQuestions.length}`;
+            document.getElementById('prev-btn').disabled = currentIndex === 0;
+
+            let htmlDisplay = q.display;
+            let inputCounter = 0;
+            htmlDisplay = htmlDisplay.replace(/\[(.*?)\]/g, (match, p1) => {
+                let existingVal = (userAnswers[currentIndex] && userAnswers[currentIndex].inputs && userAnswers[currentIndex].inputs[inputCounter] !== undefined) 
+                    ? userAnswers[currentIndex].inputs[inputCounter] 
+                    : '';
+                let id = `input-${inputCounter}`;
+                let compName = p1;
+                inputCounter++;
+                return `<div class="inline-flex flex-col items-center mx-1 my-1.5">
+                    <input type="number" min="1" max="99" id="${id}" value="${existingVal}" class="w-12 h-12 sm:w-16 sm:h-16 text-center text-lg sm:text-2xl font-bold bg-[#0f0d1a] border-2 border-purple-900/60 rounded-2xl focus:border-purple-400 focus:outline-none text-purple-200 shadow-inner transition" placeholder="1">
+                    <span class="text-[10px] sm:text-xs text-purple-300/70 mt-1 font-normal max-w-[70px] sm:max-w-[80px] truncate">${compName}</span>
+                </div>`;
+            });
+
+            document.getElementById('equation-container').innerHTML = htmlDisplay;
+            
+            const feedbackBox = document.getElementById('feedback-box');
+            if(userAnswers[currentIndex] && userAnswers[currentIndex].checked) {
+                showFeedbackUI(userAnswers[currentIndex]);
+            } else {
+                feedbackBox.classList.add('hidden');
+                document.getElementById('submit-btn').classList.remove('hidden');
+                document.getElementById('next-btn').classList.add('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        function submitAnswer() {
+            const q = currentQuestions[currentIndex];
+            const inputs = document.querySelectorAll('#equation-container input');
+            let userVals = [];
+            let isValid = true;
+
+            inputs.forEach(input => {
+                let val = parseInt(input.value);
+                if(isNaN(val) || val <= 0) isValid = false;
+                userVals.push(val);
+            });
+
+            if(!isValid) {
+                alert('E hèm! Bạn nhớ điền đầy đủ hệ số (số nguyên dương > 0) vào tất cả các ô nha!');
+                return;
+            }
+
+            let isCorrect = true;
+            if(userVals.length !== q.correct.length) {
+                isCorrect = false;
+            } else {
+                for(let i = 0; i < q.correct.length; i++) {
+                    if(userVals[i] !== q.correct[i]) {
+                        isCorrect = false;
+                        break;
+                    }
+                }
+            }
+
+            const resultData = {
+                inputs: userVals,
+                isCorrect: isCorrect,
+                correctAnswers: q.correct,
+                checked: true
+            };
+
+            userAnswers[currentIndex] = resultData;
+            showFeedbackUI(resultData);
+        }
+
+        function showFeedbackUI(result) {
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.remove('hidden');
+
+            const praises = [
+                "Đỉnh của chóp! Bạn tính chuẩn không cần chỉnh luôn á ahihi! ✨",
+                "Quá xuất sắc! Cân bằng phản ứng này dễ như ăn kẹo với bạn gòi! 🍬",
+                "Chuẩn xác tuyệt đối! Não bộ hóa học hoạt động hết công suất nè! 🚀"
+            ];
+            const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+
+            if(result.isCorrect) {
+                feedbackBox.className = "p-4 rounded-2xl mb-6 text-xs sm:text-sm border bg-purple-500/10 border-purple-500/30 text-purple-200";
+                feedbackBox.innerHTML = `
+                    <div class="flex items-center gap-2 font-bold mb-1 text-purple-300">
+                        <i data-lucide="check-circle-2" class="w-5 h-5"></i> Chính xác hoàn toàn!
+                    </div>
+                    <p>${randomPraise}</p>
+                `;
+            } else {
+                feedbackBox.className = "p-4 rounded-2xl mb-6 text-xs sm:text-sm border bg-rose-500/10 border-rose-500/30 text-rose-300";
+                feedbackBox.innerHTML = `
+                    <div class="flex items-center gap-2 font-bold mb-1 text-rose-400">
+                        <i data-lucide="x-circle" class="w-5 h-5"></i> Úi, chưa đúng rồi nè!
+                    </div>
+                    <p class="mb-2">Đáp án chuẩn của hệ số là: <strong class="text-white font-mono bg-rose-950/60 px-2 py-0.5 rounded">${result.correctAnswers.join(' - ')}</strong></p>
+                    <p class="text-[11px] sm:text-xs text-purple-300/70">Mẹo nhỏ: Kiểm tra kỹ số nguyên tử từng nguyên tố ở 2 vế để cân bằng chính xác hơn nhé!</p>
+                `;
+            }
+
+            document.getElementById('submit-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function nextQuestion() {
+            if(currentIndex < currentQuestions.length - 1) {
+                currentIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if(currentIndex > 0) {
+                currentIndex--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            let correctCount = 0;
+            userAnswers.forEach((ans) => {
+                if(ans && ans.isCorrect) correctCount++;
+            });
+
+            let percentage = Math.round((correctCount / currentQuestions.length) * 100);
+            let score10 = ((correctCount / currentQuestions.length) * 10).toFixed(1);
+
+            // Cập nhật số liệu màn hình kết quả
+            document.getElementById('final-score-10').innerText = score10;
+            document.getElementById('chart-percentage').innerText = `${percentage}%`;
+            document.getElementById('final-correct-count').innerText = `${correctCount}/${currentQuestions.length}`;
+
+            // Tính toán hiệu ứng vòng tròn SVG (Chu vi hình tròn bán kính r=40 là ~251.2)
+            const circumference = 251.2;
+            const offset = circumference - (percentage / 100) * circumference;
+            const ring = document.getElementById('progress-ring');
+            ring.style.strokeDashoffset = offset;
+
+            // Đánh giá năng lực
+            let commentEl = document.getElementById('evaluation-comment');
+            let evaluationText = "";
+            if(percentage === 100) {
+                evaluationText = "🎉 Hoàn hảo tuyệt đối! Bạn nắm rất vững phương pháp bảo toàn nguyên tố và cân bằng PTHH. Tuyệt cú mèo, tiếp tục phát huy phong độ này nha!";
+            } else if(percentage >= 80) {
+                evaluationText = "⭐ Quá xịn xò! Bạn xử lý các phương trình rất mượt. Chỉ thỉnh thoảng sảy chân ở một vài câu phức tạp. Cố gắng cẩn thận hơn ở phần đếm số nguyên tử là hoàn hảo luôn!";
+            } else if(percentage >= 50) {
+                evaluationText = "💪 Khá ổn áp nhưng vẫn cần mài giũa thêm nha! Bạn có một vài lỗi sai ở các câu đòi hỏi tư duy hệ số chẵn lẻ. Hãy ôn lại cách chọn nguyên tố xuất hiện nhiều nhất để cân bằng trước nhé.";
+            } else {
+                evaluationText = "🌱 Đừng nản lòng nha! Lỗi sai chủ yếu là bạn chưa cân bằng triệt để nguyên tử 2 vế. Hãy luyện tập lại mức Dễ để quen tay hơn nghen!";
+            }
+            commentEl.innerText = evaluationText;
+
+            // Render chi tiết
+            let reviewContainer = document.getElementById('detailed-review-list');
+            let reviewHTML = "";
+
+            currentQuestions.forEach((q, idx) => {
+                let ans = userAnswers[idx];
+                let isRight = ans && ans.isCorrect;
+                let badgeColor = isRight ? "bg-purple-500/15 text-purple-300 border-purple-500/30" : "bg-rose-500/15 text-rose-300 border-rose-500/30";
+                let iconName = isRight ? "check-circle" : "x-circle";
+                let statusText = isRight ? "Đúng" : "Sai";
+
+                reviewHTML += `
+                    <div class="bg-[#0a0812]/70 p-3.5 sm:p-4 rounded-xl border border-purple-900/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <span class="text-[11px] sm:text-xs font-bold text-purple-300/70">Câu ${idx + 1}</span>
+                            <div class="font-mono text-xs sm:text-sm font-bold text-slate-200 mt-0.5">${q.display}</div>
+                        </div>
+                        <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                            <div class="text-[11px] sm:text-xs text-right">
+                                <span class="text-purple-300/70 block">Đáp án chuẩn: <b class="text-purple-300">${q.correct.join(', ')}</b></span>
+                                ${!isRight ? `<span class="text-rose-300 block">Bạn chọn: ${ans ? ans.inputs.join(', ') : 'Chưa làm'}</span>` : ''}
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold border ${badgeColor} flex items-center gap-1">
+                                <i data-lucide="${iconName}" class="w-3.5 h-3.5"></i> ${statusText}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            reviewContainer.innerHTML = reviewHTML;
+            lucide.createIcons();
+        }
+
+        function resetQuiz() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+    </script>
+</body>
+</html>
